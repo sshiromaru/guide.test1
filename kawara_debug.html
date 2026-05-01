@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>GLB Debug</title>
+<style>
+body { background:#050f20; color:#f0f8ff; font-family:sans-serif; padding:20px; }
+#log { background:#0a1830; border:1px solid #4a90d9; border-radius:10px; padding:16px; font-size:13px; line-height:2; white-space:pre-wrap; }
+</style>
+</head>
+<body>
+<h2 style="color:#4a90d9">🐱 GLB読み込みテスト</h2>
+<div id="log">テスト開始...\n</div>
+
+<script type="module">
+const log = document.getElementById('log');
+const add = (msg, color='#f0f8ff') => {
+  log.innerHTML += `<span style="color:${color}">${msg}</span>\n`;
+};
+
+add('📍 現在のURL: ' + location.href);
+add('📁 GLBを探す場所: ' + new URL('kawara.glb', location.href).href);
+
+import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
+
+add('⏳ GLTFLoader読み込み開始...');
+
+const loader = new GLTFLoader();
+loader.load(
+  'kawara.glb',
+  (gltf) => {
+    add('✅ 成功！モデル読み込み完了', '#4ade80');
+    add(`📦 アニメーション数: ${gltf.animations.length}`, '#4ade80');
+    add(`🎨 シーン: ${JSON.stringify(gltf.scene.name)}`, '#4ade80');
+  },
+  (xhr) => {
+    const pct = xhr.total > 0 ? Math.round(xhr.loaded/xhr.total*100) : '?';
+    add(`⬇️ 読み込み中... ${pct}% (${Math.round(xhr.loaded/1024)}KB)`, '#fcd9a0');
+  },
+  (err) => {
+    add('❌ エラー発生！', '#f87171');
+    add('詳細: ' + err.message, '#f87171');
+    add('→ kawara.glbがこのHTMLと同じフォルダにあるか確認してください', '#f87171');
+  }
+);
+</script>
+</body>
+</html>
